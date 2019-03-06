@@ -13,22 +13,24 @@ namespace WebStat
         private double mapWidth;
         private double mapHeight;
         private double currentArea;
+        public int nodesCount;
         private double koef;
-        public LayBuilder(TreeNode rootNode,double width, double height)
+        public LayBuilder(TreeNode rootNode,int nodesCount,double width, double height)
         {
+            this.nodesCount = nodesCount;
             mapRows = new List<MapRow>();
             this.rootNode = rootNode;
             mapWidth = width;
             mapHeight = height;
-            currentArea = (from ch in rootNode.Children select ch.GetArea()).Sum();
-            koef = (width * height)/currentArea;
-            currentArea = currentArea * koef;
         }
         public IEnumerable<MapRow> getLayRows()
         {
             if (mapWidth * mapHeight == 0)
                 return null;
-            var children = (from ch in rootNode.Children select new RowElement(ch)).OrderByDescending(x=>x.value).ToList();
+            var children = (from ch in rootNode.Children select new RowElement(ch)).OrderByDescending(x=>x.value).Take(nodesCount).ToList();
+            currentArea = (from ch in children select ch.value).Sum();
+            koef = (mapWidth * mapHeight) / currentArea;
+            currentArea = currentArea * koef;
             children.ForEach(x => x.value *= koef);
             var row = getRow();
             squarify(children, row, Math.Min(mapHeight, mapWidth));
