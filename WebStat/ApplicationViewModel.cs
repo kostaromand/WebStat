@@ -13,7 +13,6 @@ namespace WebStat
 {
     public class ApplicationViewModel
     {
-        public string t = "asd";
         MainWindow window;
         string filePath = "";
         int topRequest = 5;
