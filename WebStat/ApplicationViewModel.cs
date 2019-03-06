@@ -58,7 +58,56 @@ namespace WebStat
             }
         }
 
+        TextBlock getTextBlock(Color color,string name)
+        {
+            var textBlock= new TextBlock();
+            textBlock.Background = new SolidColorBrush(color);
+            textBlock.Text = name; 
+            textBlock.TextAlignment = TextAlignment.Center;
+            textBlock.FontSize = 16;
+            textBlock.Height = 20;
+            textBlock.Foreground = new SolidColorBrush(Colors.White);
+            textBlock.SetValue(DockPanel.DockProperty, Dock.Top);
+            return textBlock;
+        }
 
+        Popup getPopup(Color color,string title,List<Tuple<string,int>> requests)
+        {
+            Popup popup = new Popup();
+            popup.Placement = PlacementMode.Mouse;
+            DockPanel popupPanel = new DockPanel();
+            TextBlock popupTitle = new TextBlock();
+            popupTitle.Text = title;
+            popupTitle.TextWrapping = TextWrapping.Wrap;
+            popupTitle.TextAlignment = TextAlignment.Center;
+            popupTitle.FontSize = 16;
+            popupTitle.Foreground = new SolidColorBrush(Colors.White);
+            popupTitle.SetValue(DockPanel.DockProperty, Dock.Top);
+            TextBlock popupNotation = new TextBlock();
+            popupNotation.Text = "Топ Запросов:";
+            popupNotation.TextAlignment = TextAlignment.Left;
+            popupNotation.FontSize = 16;
+            popupNotation.Foreground = new SolidColorBrush(Colors.White);
+            popupNotation.SetValue(DockPanel.DockProperty, Dock.Top);
+            ListBox listBoxNames = new ListBox();
+            listBoxNames.Background = new SolidColorBrush(color);
+            listBoxNames.Foreground = new SolidColorBrush(Colors.White);
+            listBoxNames.FontSize = 16;
+            listBoxNames.HorizontalAlignment = HorizontalAlignment.Stretch;
+            if (requests.Count != 0)
+                listBoxNames.ItemsSource = (from r in requests select r.Item1 + " " + r.Item2).ToArray();
+            listBoxNames.SetValue(DockPanel.DockProperty, Dock.Left);
+            popupPanel.Children.Add(popupTitle);
+            popupPanel.Children.Add(popupNotation);
+            popupPanel.Children.Add(listBoxNames);
+            popupPanel.Background = new SolidColorBrush(color);
+            Border borderPopup = new Border();
+            borderPopup.BorderThickness = new Thickness(1);
+            borderPopup.BorderBrush = new SolidColorBrush(Colors.Coral);
+            borderPopup.Child = popupPanel;
+            popup.Child = borderPopup;
+            return popup;
+        }
 
         void CreateTreeMap(TreeNode node, Canvas currentCanvas, int level)
         {
@@ -73,7 +122,6 @@ namespace WebStat
             {
                 foreach (var elem in row.GetElements())
                 {
-                    var rowElement = (RowElement)elem;
                     Color color;
                     if (level == 0)
                     {
@@ -86,77 +134,40 @@ namespace WebStat
                     {
                         color = ((SolidColorBrush)currentCanvas.Background).Color;
                     }
-                    DockPanel dockPanel = new DockPanel();
-                    TextBlock title = new TextBlock();
                     Color auxColor = color;
-                    auxColor.R -= (byte)(10 * level+1);
-                    auxColor.G -= (byte)(10 * level+1);
-                    auxColor.B -= (byte)(10 * level+1);
-                    title.Background = new SolidColorBrush(auxColor);
-                    title.Text = rowElement.Node.ShortName;
-                    title.TextAlignment = TextAlignment.Center;
-                    title.FontSize = 16;
-                    title.Height = 20;
-                    title.Foreground = new SolidColorBrush(Colors.White);
-                    title.SetValue(DockPanel.DockProperty, Dock.Top);
+                    auxColor.R -= (byte)(10 * level + 1);
+                    auxColor.G -= (byte)(10 * level + 1);
+                    auxColor.B -= (byte)(10 * level + 1);
+                    DockPanel dockPanel = new DockPanel();
+                    dockPanel.Width = elem.width;
+                    dockPanel.LastChildFill = true;
+                    dockPanel.Height = elem.height;
+                    dockPanel.SetValue(Canvas.LeftProperty, elem.left);
+                    dockPanel.SetValue(Canvas.TopProperty, elem.top);
+                    TextBlock title = getTextBlock(auxColor, elem.Node.ShortName);
                     dockPanel.Children.Add(title);
-                    dockPanel.Width = rowElement.width;
-                    dockPanel.LastChildFill = true;
-                    dockPanel.Height = rowElement.height;
-                    dockPanel.SetValue(Canvas.LeftProperty, rowElement.left);
-                    dockPanel.SetValue(Canvas.TopProperty, rowElement.top);
-                    dockPanel.LastChildFill = true;
+                    dockPanel.LastChildFill = true;   
+                    Canvas canvas = new Canvas();
+                    canvas.Background = new SolidColorBrush(color);
                     Border border = new Border();
                     border.BorderThickness = new Thickness(1);
                     border.BorderBrush = new SolidColorBrush(auxColor);
-                    Canvas canvas = new Canvas();
-                    canvas.Background = new SolidColorBrush(color);
                     border.Child = canvas;
                     dockPanel.Children.Add(border);
-                    Popup popup = new Popup();
-                    popup.Placement = PlacementMode.Mouse;
-                    DockPanel popupPanel = new DockPanel();
-                    TextBlock popupTitle = new TextBlock();
-                    popupTitle.Text = rowElement.Node.ShortName;
-                    popupTitle.TextWrapping = TextWrapping.Wrap;
-                    popupTitle.TextAlignment = TextAlignment.Center;
-                    popupTitle.FontSize = 16;
-                    popupTitle.Foreground = new SolidColorBrush(Colors.White);
-                    popupTitle.SetValue(DockPanel.DockProperty, Dock.Top);
-                    TextBlock popupNotation = new TextBlock();
-                    popupNotation.Text = "Топ Запросов:";
-                    popupNotation.TextAlignment = TextAlignment.Left;
-                    popupNotation.FontSize = 16;
-                    popupNotation.Foreground = new SolidColorBrush(Colors.White);
-                    popupNotation.SetValue(DockPanel.DockProperty, Dock.Top);
-                    ListBox listBoxNames = new ListBox();
-                    listBoxNames.Background = new SolidColorBrush(auxColor);
-                    listBoxNames.Foreground = new SolidColorBrush(Colors.White);
-                    listBoxNames.FontSize = 16;
-                    listBoxNames.HorizontalAlignment = HorizontalAlignment.Stretch;
-                    if (node.TopRequests.Count != 0)
-                        listBoxNames.ItemsSource = (from r in node.TopRequests select r.Item1 + " " + r.Item2).ToArray();
-                    listBoxNames.SetValue(DockPanel.DockProperty, Dock.Left);
-                    popupPanel.Children.Add(popupTitle);
-                    popupPanel.Children.Add(popupNotation);
-                    popupPanel.Children.Add(listBoxNames);
-                    popupPanel.Background = new SolidColorBrush(auxColor);
-                    Border borderPopup = new Border();
-                    borderPopup.BorderThickness = new Thickness(1);
-                    borderPopup.BorderBrush = new SolidColorBrush(Colors.Coral);
-                    borderPopup.Child = popupPanel;
-                    popup.Child = borderPopup;
+                    Popup popup = getPopup(auxColor, elem.Node.ShortName, elem.Node.TopRequests);
                     title.MouseEnter += (s, e) => { popup.IsOpen = true; };
                     title.MouseLeave += (s, e) => { popup.IsOpen = false; };
                     currentCanvas.Children.Add(dockPanel);
                     double canvasHeight = dockPanel.Height - title.Height;
-                    if (canvasHeight <= 0 || dockPanel.Width <= 0)
-                        continue;
-                    canvas.Height = canvasHeight;
-                    canvas.Width = dockPanel.Width;
-                    title.Loaded += (s, e) => {
-                        CreateTreeMap(rowElement.Node, canvas, level + 1);
-                    };
+                    if (canvasHeight > 0 && dockPanel.Width > 0)
+                    {
+                        canvas.Height = canvasHeight;
+                        canvas.Width = dockPanel.Width;
+                        title.Loaded += (s, e) =>
+                        {
+                            CreateTreeMap(elem.Node, canvas, level + 1);
+                        };
+                    }
                 }
             }
         }

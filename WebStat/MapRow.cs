@@ -8,7 +8,7 @@ namespace WebStat
 {
     public class MapRow : MapElement
     {
-        private List<MapElement> Elements;
+        private List<RowElement> Elements;
         private double rectHeight;
         private double rectWidth;
         private double fullArea;
@@ -16,7 +16,7 @@ namespace WebStat
         public bool completed { get; private set; }
         public MapRow(double left, double top, Orientation orientation, double emptyRectHeight, double emptyRectWidth,double fullArea) : base(0)
         {
-            Elements = new List<MapElement>();
+            Elements = new List<RowElement>();
             this.left = left;
             this.top = top;
             this.orientation = orientation;
@@ -54,7 +54,7 @@ namespace WebStat
             var elementsValues = (from e in Elements select e.value).ToList();
             return elementsValues;
         }
-        public void AddElement(MapElement element)
+        public void AddElement(RowElement element)
         {
             if (completed == false)
             {
@@ -99,7 +99,7 @@ namespace WebStat
             }
             completed = true;
         }
-        public IEnumerable<MapElement> GetElements()
+        public IEnumerable<RowElement> GetElements()
         {
             return Elements;
         }
