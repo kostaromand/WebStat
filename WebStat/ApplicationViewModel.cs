@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 
 namespace WebStat
 {
@@ -77,6 +78,7 @@ namespace WebStat
             DockPanel popupPanel = new DockPanel();
             TextBlock popupTitle = new TextBlock();
             popupTitle.Text = title;
+            popup.Width = 250;
             popupTitle.TextWrapping = TextWrapping.Wrap;
             popupTitle.TextAlignment = TextAlignment.Center;
             popupTitle.FontSize = 16;
@@ -141,8 +143,6 @@ namespace WebStat
                     dockPanel.Width = elem.width;
                     dockPanel.LastChildFill = true;
                     dockPanel.Height = elem.height;
-                    dockPanel.SetValue(Canvas.LeftProperty, elem.left);
-                    dockPanel.SetValue(Canvas.TopProperty, elem.top);
                     TextBlock title = getTextBlock(auxColor, elem.Node.ShortName);
                     dockPanel.Children.Add(title);
                     dockPanel.LastChildFill = true;   
@@ -151,12 +151,22 @@ namespace WebStat
                     Border border = new Border();
                     border.BorderThickness = new Thickness(1);
                     border.BorderBrush = new SolidColorBrush(auxColor);
-                    border.Child = canvas;
-                    dockPanel.Children.Add(border);
+                    border.Child = dockPanel;
+                    border.SetValue(Canvas.LeftProperty, elem.left);
+                    border.SetValue(Canvas.TopProperty, elem.top);
+                    dockPanel.Children.Add(canvas);
                     Popup popup = getPopup(auxColor, elem.Node.ShortName, elem.Node.TopRequests);
-                    title.MouseEnter += (s, e) => { popup.IsOpen = true; };
-                    title.MouseLeave += (s, e) => { popup.IsOpen = false; };
-                    currentCanvas.Children.Add(dockPanel);
+                    title.MouseEnter += (s, e) => {
+                        popup.IsOpen = true;
+                        border.BorderThickness = new Thickness(4);
+                        border.BorderBrush = new SolidColorBrush(Colors.Red);
+                    };
+                    title.MouseLeave += (s, e) => {
+                        popup.IsOpen = false;
+                        border.BorderThickness = new Thickness(1);
+                        border.BorderBrush = new SolidColorBrush(auxColor);
+                    };
+                    currentCanvas.Children.Add(border);
                     double canvasHeight = dockPanel.Height - title.Height;
                     if (canvasHeight > 0 && dockPanel.Width > 0)
                     {
