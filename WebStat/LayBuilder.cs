@@ -15,6 +15,8 @@ namespace WebStat
         private double currentArea;
         public int nodesCount;
         private double koef;
+        private double minSize = 100;
+
         public LayBuilder(TreeNode rootNode,int nodesCount,double width, double height)
         {
             this.nodesCount = nodesCount;
@@ -29,7 +31,9 @@ namespace WebStat
                 return null;
             var children = (from ch in rootNode.Children select new RowElement(ch)).OrderByDescending(x=>x.value).Take(nodesCount).ToList();
             currentArea = (from ch in children select ch.value).Sum();
-            children = (from ch in children where ch.value / currentArea >= 0.01 select ch).ToList();
+            double widthRatio = minSize / mapWidth;
+            double heightRatio = minSize / mapWidth;
+            children = (from ch in children where ch.value / currentArea >= widthRatio*heightRatio select ch).ToList();
             currentArea = (from ch in children select ch.value).Sum();
             koef = (mapWidth * mapHeight) / currentArea;
             currentArea = currentArea * koef;

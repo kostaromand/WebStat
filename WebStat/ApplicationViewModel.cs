@@ -22,6 +22,7 @@ namespace WebStat
         int maxColorNum = 200;
         int minColorNum = 50;
         TreeBuilder builder;
+        double borderThickness = 4;
         public ApplicationViewModel(MainWindow window)
         {
             this.window = window;
@@ -65,7 +66,7 @@ namespace WebStat
             textBlock.Text = name; 
             textBlock.TextAlignment = TextAlignment.Center;
             textBlock.FontSize = 16;
-            textBlock.Height = 20;
+            textBlock.Height = 25;
             textBlock.Foreground = new SolidColorBrush(Colors.White);
             textBlock.SetValue(DockPanel.DockProperty, Dock.Top);
             return textBlock;
@@ -162,8 +163,8 @@ namespace WebStat
                     auxColor.G = decreaseColor(auxColor.G, level);
                     auxColor.B = decreaseColor(auxColor.B, level);
                     DockPanel dockPanel = new DockPanel();
-                    dockPanel.Width = elem.width;
-                    dockPanel.Height = elem.height;
+                    dockPanel.Width = elem.width - borderThickness*2;
+                    dockPanel.Height = elem.height - borderThickness * 2;
                     dockPanel.LastChildFill = true;
                     
                     TextBlock title = getTextBlock(auxColor, elem.Node.ShortName);
@@ -172,7 +173,7 @@ namespace WebStat
                     Canvas newCanvas = new Canvas();
                     newCanvas.Background = new SolidColorBrush(color);
                     Border border = new Border();
-                    border.BorderThickness = new Thickness(4);
+                    border.BorderThickness = new Thickness(borderThickness);
                     border.BorderBrush = new SolidColorBrush(Colors.Transparent);
                     border.Child = dockPanel;
                     border.Width = elem.width;
@@ -192,7 +193,7 @@ namespace WebStat
                     currentCanvas.Children.Add(border);
                     newCanvas.Background = new SolidColorBrush(auxColor);
                     double canvasHeight = dockPanel.Height - title.Height;
-                    if (canvasHeight > 0 && dockPanel.Width > 0)
+                    if (canvasHeight > 40 && dockPanel.Width > 200)
                     {
                         newCanvas.Height = canvasHeight;
                         newCanvas.Width = dockPanel.Width;

@@ -32,10 +32,6 @@
                 WebStat
             </TextBlock>
             <Canvas Background="#990000" Name="WebStatCanvas">
-                <Border Width="129" Height="114" Canvas.Left="340" Canvas.Top="336" BorderBrush="Blue" BorderThickness="0">
-                    <DockPanel  LastChildFill="False" Canvas.Left="340" Canvas.Top="336" />
-                </Border>
-
             </Canvas>
         </DockPanel>
     </DockPanel>
