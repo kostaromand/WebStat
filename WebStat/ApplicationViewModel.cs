@@ -110,6 +110,28 @@ namespace WebStat
             return popup;
         }
 
+
+        void changeNextBorder(FrameworkElement parent,Color color)
+        {
+            if (parent is Border)
+            {
+                var currentBorder = (Border)parent;
+                currentBorder.BorderBrush = new SolidColorBrush(color);
+            }
+            else if (parent is Window)
+            {
+                return;
+            }
+            changeNextBorder((FrameworkElement)parent.Parent, color);
+        }
+
+        byte decreaseColor(byte value,int level)
+        {
+            byte subtrahend = (byte)(10 * level + 1);
+            if (value - subtrahend >= 0)
+                value -= subtrahend;
+            return value;
+        }
         void CreateTreeMap(TreeNode node, Canvas currentCanvas, int level)
         {
             double w = currentCanvas.ActualWidth == 0 ? currentCanvas.Width : currentCanvas.ActualWidth;
@@ -136,45 +158,47 @@ namespace WebStat
                         color = ((SolidColorBrush)currentCanvas.Background).Color;
                     }
                     Color auxColor = color;
-                    auxColor.R -= (byte)(10 * level + 1);
-                    auxColor.G -= (byte)(10 * level + 1);
-                    auxColor.B -= (byte)(10 * level + 1);
+                    auxColor.R = decreaseColor(auxColor.R, level);
+                    auxColor.G = decreaseColor(auxColor.G, level);
+                    auxColor.B = decreaseColor(auxColor.B, level);
                     DockPanel dockPanel = new DockPanel();
                     dockPanel.Width = elem.width;
-                    dockPanel.LastChildFill = true;
                     dockPanel.Height = elem.height;
+                    dockPanel.LastChildFill = true;
+                    
                     TextBlock title = getTextBlock(auxColor, elem.Node.ShortName);
                     dockPanel.Children.Add(title);
                     dockPanel.LastChildFill = true;   
-                    Canvas canvas = new Canvas();
-                    canvas.Background = new SolidColorBrush(color);
+                    Canvas newCanvas = new Canvas();
+                    newCanvas.Background = new SolidColorBrush(color);
                     Border border = new Border();
-                    border.BorderThickness = new Thickness(1);
-                    border.BorderBrush = new SolidColorBrush(auxColor);
+                    border.BorderThickness = new Thickness(4);
+                    border.BorderBrush = new SolidColorBrush(Colors.Transparent);
                     border.Child = dockPanel;
+                    border.Width = elem.width;
+                    border.Height = elem.height;
                     border.SetValue(Canvas.LeftProperty, elem.left);
                     border.SetValue(Canvas.TopProperty, elem.top);
-                    dockPanel.Children.Add(canvas);
+                    dockPanel.Children.Add(newCanvas);
                     Popup popup = getPopup(auxColor, elem.Node.ShortName, elem.Node.TopRequests);
                     title.MouseEnter += (s, e) => {
                         popup.IsOpen = true;
-                        border.BorderThickness = new Thickness(4);
-                        border.BorderBrush = new SolidColorBrush(Colors.Red);
+                        changeNextBorder(title,Colors.Red);
                     };
                     title.MouseLeave += (s, e) => {
                         popup.IsOpen = false;
-                        border.BorderThickness = new Thickness(1);
-                        border.BorderBrush = new SolidColorBrush(auxColor);
+                        changeNextBorder(title,Colors.Transparent);
                     };
                     currentCanvas.Children.Add(border);
+                    newCanvas.Background = new SolidColorBrush(auxColor);
                     double canvasHeight = dockPanel.Height - title.Height;
                     if (canvasHeight > 0 && dockPanel.Width > 0)
                     {
-                        canvas.Height = canvasHeight;
-                        canvas.Width = dockPanel.Width;
+                        newCanvas.Height = canvasHeight;
+                        newCanvas.Width = dockPanel.Width;
                         title.Loaded += (s, e) =>
                         {
-                            CreateTreeMap(elem.Node, canvas, level + 1);
+                            CreateTreeMap(elem.Node, newCanvas, level + 1);
                         };
                     }
                 }

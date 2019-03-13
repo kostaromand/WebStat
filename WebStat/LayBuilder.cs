@@ -29,6 +29,8 @@ namespace WebStat
                 return null;
             var children = (from ch in rootNode.Children select new RowElement(ch)).OrderByDescending(x=>x.value).Take(nodesCount).ToList();
             currentArea = (from ch in children select ch.value).Sum();
+            children = (from ch in children where ch.value / currentArea >= 0.01 select ch).ToList();
+            currentArea = (from ch in children select ch.value).Sum();
             koef = (mapWidth * mapHeight) / currentArea;
             currentArea = currentArea * koef;
             children.ForEach(x => x.value *= koef);
