@@ -15,7 +15,7 @@ namespace WebStat
         private double currentArea;
         public int nodesCount;
         private double koef;
-        private double minSize = 100;
+        private double minSize = 120;
 
         public LayBuilder(TreeNode rootNode,int nodesCount,double width, double height)
         {

@@ -27,6 +27,7 @@ namespace WebStat
         {
             this.window = window;
         }
+
         public void getPathClick()
         {
             System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
@@ -193,7 +194,7 @@ namespace WebStat
                     currentCanvas.Children.Add(border);
                     newCanvas.Background = new SolidColorBrush(auxColor);
                     double canvasHeight = dockPanel.Height - title.Height;
-                    if (canvasHeight > 40 && dockPanel.Width > 200)
+                    if (canvasHeight > borderThickness*2 && dockPanel.Width > borderThickness * 2)
                     {
                         newCanvas.Height = canvasHeight;
                         newCanvas.Width = dockPanel.Width;
