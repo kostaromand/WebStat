@@ -23,6 +23,7 @@ namespace WebStat
         int minColorNum = 50;
         TreeBuilder builder;
         double borderThickness = 4;
+        Color borderColor = new Color() { A = 255, R = 74, G = 179, B = 198 };
         public ApplicationViewModel(MainWindow window)
         {
             this.window = window;
@@ -56,7 +57,7 @@ namespace WebStat
             {
                 TreeNode root = builder.GetTree();
                 window.WebStatCanvas.Children.Clear();
-                CreateTreeMap(root, window.WebStatCanvas, 0);
+                CreateTreeMap(root, window.WebStatCanvas, 1);
             }
         }
 
@@ -127,12 +128,16 @@ namespace WebStat
             changeNextBorder((FrameworkElement)parent.Parent, color);
         }
 
-        byte decreaseColor(byte value,int level)
+        Color decreaseColor(Color color,int level,int degree)
         {
-            byte subtrahend = (byte)(10 * level + 1);
-            if (value - subtrahend >= 0)
-                value -= subtrahend;
-            return value;
+            byte subtrahend = (byte)(degree * level + 1);
+            if (color.R - subtrahend >= 0)
+                color.R -= subtrahend;
+            if (color.G - subtrahend >= 0)
+                color.G -= subtrahend;
+            if (color.B - subtrahend >= 0)
+                color.B -= subtrahend;
+            return color;
         }
         void CreateTreeMap(TreeNode node, Canvas currentCanvas, int level)
         {
@@ -148,7 +153,7 @@ namespace WebStat
                 foreach (var elem in row.GetElements())
                 {
                     Color color;
-                    if (level == 0)
+                    if (level == 1)
                     {
                         byte r = (byte)(rand.Next(minColorNum, maxColorNum));
                         byte g = (byte)(rand.Next(minColorNum, maxColorNum));
@@ -159,40 +164,43 @@ namespace WebStat
                     {
                         color = ((SolidColorBrush)currentCanvas.Background).Color;
                     }
-                    Color auxColor = color;
-                    auxColor.R = decreaseColor(auxColor.R, level);
-                    auxColor.G = decreaseColor(auxColor.G, level);
-                    auxColor.B = decreaseColor(auxColor.B, level);
+                    Color auxColor = decreaseColor(color, level,4);
                     DockPanel dockPanel = new DockPanel();
-                    dockPanel.Width = elem.width - borderThickness*2;
-                    dockPanel.Height = elem.height - borderThickness * 2;
-                    dockPanel.LastChildFill = true;
-                    
-                    TextBlock title = getTextBlock(auxColor, elem.Node.ShortName);
+                    dockPanel.Width = elem.Width - borderThickness*2;
+                    dockPanel.Height = elem.Height - borderThickness * 2;
+                    dockPanel.LastChildFill = true;    
+                    TextBlock title = getTextBlock(decreaseColor(auxColor, level, 6), elem.Node.ShortName);
+                    if (elem.Width < 50)
+                    {
+                        title.Text = "";
+                        title.Height = elem.Height;
+                        title.Background = new SolidColorBrush(auxColor);
+                    }
                     dockPanel.Children.Add(title);
                     dockPanel.LastChildFill = true;   
                     Canvas newCanvas = new Canvas();
-                    newCanvas.Background = new SolidColorBrush(color);
+                    newCanvas.Background = new SolidColorBrush(auxColor);
                     Border border = new Border();
                     border.BorderThickness = new Thickness(borderThickness);
                     border.BorderBrush = new SolidColorBrush(Colors.Transparent);
                     border.Child = dockPanel;
-                    border.Width = elem.width;
-                    border.Height = elem.height;
-                    border.SetValue(Canvas.LeftProperty, elem.left);
-                    border.SetValue(Canvas.TopProperty, elem.top);
+                    border.Width = elem.Width;
+                    border.Height = elem.Height;
+                    border.SetValue(Canvas.LeftProperty, elem.Left);
+                    border.SetValue(Canvas.TopProperty, elem.Top);
+                    DockPanel.SetDock(newCanvas, Dock.Top);
                     dockPanel.Children.Add(newCanvas);
+                    dockPanel.SetValue(Panel.ZIndexProperty, level);
                     Popup popup = getPopup(auxColor, elem.Node.ShortName, elem.Node.TopRequests);
                     title.MouseEnter += (s, e) => {
                         popup.IsOpen = true;
-                        changeNextBorder(title,Colors.Red);
+                        border.BorderBrush = new SolidColorBrush(borderColor);
                     };
                     title.MouseLeave += (s, e) => {
                         popup.IsOpen = false;
-                        changeNextBorder(title,Colors.Transparent);
+                        border.BorderBrush = new SolidColorBrush(Colors.Transparent);
                     };
                     currentCanvas.Children.Add(border);
-                    newCanvas.Background = new SolidColorBrush(auxColor);
                     double canvasHeight = dockPanel.Height - title.Height;
                     if (canvasHeight > borderThickness*2 && dockPanel.Width > borderThickness * 2)
                     {

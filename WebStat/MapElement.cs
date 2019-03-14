@@ -8,14 +8,14 @@ namespace WebStat
 {
     public class MapElement
     {
-        public double value { get; set; }
-        public double left { get; set; }
-        public double top { get; set; }
-        public double height { get; set; }
-        public double width { get; set; }
+        public double Value { get; set; }
+        public double Left { get; set; }
+        public double Top { get; set; }
+        public double Height { get; set; }
+        public double Width { get; set; }
         public MapElement(double value)
         {
-            this.value = value;
+            this.Value = value;
         }
     }
 }

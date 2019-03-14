@@ -28,10 +28,10 @@
             <TextBox Grid.Column="2" x:Name="TopRequestCountTextBox" HorizontalAlignment="Center" Height="23" Margin="0,37,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
         </Grid>
         <DockPanel Name="WebStat" Margin="5,5,5,5">
-            <TextBlock Name="WebStatTitle" Background="#700000"  DockPanel.Dock="Top" TextAlignment="Center" Foreground="White" FontSize="18">
+            <TextBlock Name="WebStatTitle" Background="#FF23212C"  DockPanel.Dock="Top" TextAlignment="Center" Foreground="White" FontSize="18">
                 WebStat
             </TextBlock>
-            <Canvas Background="#990000" Name="WebStatCanvas">
+            <Canvas Background="#FF302B49" Name="WebStatCanvas">
             </Canvas>
         </DockPanel>
     </DockPanel>

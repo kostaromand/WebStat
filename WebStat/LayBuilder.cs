@@ -15,7 +15,7 @@ namespace WebStat
         private double currentArea;
         public int nodesCount;
         private double koef;
-        private double minSize = 120;
+        private double minSize = 50;
 
         public LayBuilder(TreeNode rootNode,int nodesCount,double width, double height)
         {
@@ -29,15 +29,15 @@ namespace WebStat
         {
             if (mapWidth * mapHeight == 0)
                 return null;
-            var children = (from ch in rootNode.Children select new RowElement(ch)).OrderByDescending(x=>x.value).Take(nodesCount).ToList();
-            currentArea = (from ch in children select ch.value).Sum();
+            var children = (from ch in rootNode.Children select new RowElement(ch)).OrderByDescending(x=>x.Value).Take(nodesCount).ToList();
+            currentArea = (from ch in children select ch.Value).Sum();
             double widthRatio = minSize / mapWidth;
             double heightRatio = minSize / mapWidth;
-            children = (from ch in children where ch.value / currentArea >= widthRatio*heightRatio select ch).ToList();
-            currentArea = (from ch in children select ch.value).Sum();
+            children = (from ch in children where ch.Value / currentArea >= widthRatio*heightRatio select ch).ToList();
+            currentArea = (from ch in children select ch.Value).Sum();
             koef = (mapWidth * mapHeight) / currentArea;
             currentArea = currentArea * koef;
-            children.ForEach(x => x.value *= koef);
+            children.ForEach(x => x.Value *= koef);
             var row = getRow();
             squarify(children, row, Math.Min(mapHeight, mapWidth));
             return mapRows;
@@ -53,15 +53,15 @@ namespace WebStat
             else
             {
                 var lastRow = mapRows.Last();
-                if(lastRow.orientation==Orientation.Horizontal)
+                if(lastRow.Orientation==Orientation.Horizontal)
                 {
-                    left = lastRow.left;
-                    top = lastRow.height + lastRow.top;
+                    left = lastRow.Left;
+                    top = lastRow.Height + lastRow.Top;
                 }
                 else
                 {
-                    left = lastRow.width + lastRow.left;
-                    top = lastRow.top;
+                    left = lastRow.Width + lastRow.Left;
+                    top = lastRow.Top;
                 }
             }
             Orientation orientation;
@@ -85,7 +85,7 @@ namespace WebStat
             var first = children[0];
             var values = row.getElementsValues();
             var temp = values.Select(x => x).ToList();
-            temp.Add(first.value);
+            temp.Add(first.Value);
             if (getMaxRatio(row.getElementsValues(), width) >= getMaxRatio(temp, width))
             {
                 row.AddElement(first);
@@ -96,13 +96,13 @@ namespace WebStat
             {
                 row.CompleteRow();
                 currentArea = currentArea - row.getArea();
-                if (row.orientation == Orientation.Horizontal)
+                if (row.Orientation == Orientation.Horizontal)
                 {
-                    mapHeight -= row.height;
+                    mapHeight -= row.Height;
                 }
                 else
                 {
-                    mapWidth -= row.width;
+                    mapWidth -= row.Width;
                 }
                 mapRows.Add(row);
                 var newRow = getRow();

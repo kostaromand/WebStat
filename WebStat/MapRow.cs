@@ -12,54 +12,54 @@ namespace WebStat
         private double rectHeight;
         private double rectWidth;
         private double fullArea;
-        public Orientation orientation;
-        public bool completed { get; private set; }
+        public Orientation Orientation;
+        public bool Completed { get; private set; }
         public MapRow(double left, double top, Orientation orientation, double emptyRectHeight, double emptyRectWidth,double fullArea) : base(0)
         {
             Elements = new List<RowElement>();
-            this.left = left;
-            this.top = top;
-            this.orientation = orientation;
+            this.Left = left;
+            this.Top = top;
+            this.Orientation = orientation;
             rectHeight = emptyRectHeight;
             rectWidth = emptyRectWidth;
             this.fullArea = fullArea;
             if (orientation == Orientation.Horizontal)
             {
-                width = emptyRectWidth;
+                Width = emptyRectWidth;
             }
             else
             {
-                height = emptyRectHeight;
+                Height = emptyRectHeight;
             }
-            completed = false;
+            Completed = false;
         }
         private void getVariableSideLength()
         {
-            if (orientation == Orientation.Horizontal)
+            if (Orientation == Orientation.Horizontal)
             {
-                height = rectHeight * (getArea() / fullArea);
+                Height = rectHeight * (getArea() / fullArea);
             }
             else
             {
-                width = rectWidth * (getArea() / fullArea);
+                Width = rectWidth * (getArea() / fullArea);
             }
         }
         public double getArea()
         {
-            double sum = Elements.Sum(x => x.value);
+            double sum = Elements.Sum(x => x.Value);
             return sum;
         }
         public List<double> getElementsValues()
         {
-            var elementsValues = (from e in Elements select e.value).ToList();
+            var elementsValues = (from e in Elements select e.Value).ToList();
             return elementsValues;
         }
         public void AddElement(RowElement element)
         {
-            if (completed == false)
+            if (Completed == false)
             {
                 Elements.Add(element);
-                value += element.value;
+                Value += element.Value;
                 getVariableSideLength();
             }
         }
@@ -67,37 +67,37 @@ namespace WebStat
         {
             for (int i = 0; i < Elements.Count; i++)
             {
-                if (orientation == Orientation.Horizontal)
+                if (Orientation == Orientation.Horizontal)
                 {
-                    Elements[i].height = height;
-                    Elements[i].width = width * (Elements[i].value / getArea());
-                    Elements[i].top = top;
+                    Elements[i].Height = Height;
+                    Elements[i].Width = Width * (Elements[i].Value / getArea());
+                    Elements[i].Top = Top;
                     if (i == 0)
                     {
-                        Elements[i].left = left;
+                        Elements[i].Left = Left;
                     }
                     else
                     {
-                        Elements[i].left = Elements[i - 1].left + Elements[i - 1].width;
+                        Elements[i].Left = Elements[i - 1].Left + Elements[i - 1].Width;
                     }
                 }
                 else
                 {
-                    Elements[i].width = width;
-                    Elements[i].height = height * (Elements[i].value / getArea());
-                    Elements[i].left = left;
+                    Elements[i].Width = Width;
+                    Elements[i].Height = Height * (Elements[i].Value / getArea());
+                    Elements[i].Left = Left;
                     if (i == 0)
                     {
-                        Elements[i].top = top;
+                        Elements[i].Top = Top;
                     }
                     else
                     {
-                        Elements[i].top = Elements[i - 1].top + Elements[i - 1].height;
+                        Elements[i].Top = Elements[i - 1].Top + Elements[i - 1].Height;
                     }
 
                 }
             }
-            completed = true;
+            Completed = true;
         }
         public IEnumerable<RowElement> GetElements()
         {

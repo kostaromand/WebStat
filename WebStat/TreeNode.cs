@@ -90,6 +90,7 @@ namespace WebStat
             {
                 current = (from item in Requests.OrderByDescending(x => x.Value)
                                select new Tuple<string, int>(item.Key, item.Value)).Take(count);
+                TopRequests = current.ToList();
                 return current;
             }
             else
