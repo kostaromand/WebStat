@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 
@@ -24,6 +26,7 @@ namespace WebStat
         TreeBuilder builder;
         double borderThickness = 4;
         Color borderColor = new Color() { A = 255, R = 74, G = 179, B = 198 };
+        NumberFormatInfo numFormat = new CultureInfo("en-US", false).NumberFormat;
         public ApplicationViewModel(MainWindow window)
         {
             this.window = window;
@@ -81,7 +84,7 @@ namespace WebStat
             DockPanel popupPanel = new DockPanel();
             TextBlock popupTitle = new TextBlock();
             popupTitle.Text = title;
-            popup.Width = 250;
+            popup.Width = 400;
             popupTitle.TextWrapping = TextWrapping.Wrap;
             popupTitle.TextAlignment = TextAlignment.Center;
             popupTitle.FontSize = 16;
@@ -93,17 +96,16 @@ namespace WebStat
             popupNotation.FontSize = 16;
             popupNotation.Foreground = new SolidColorBrush(Colors.White);
             popupNotation.SetValue(DockPanel.DockProperty, Dock.Top);
-            ListBox listBoxNames = new ListBox();
-            listBoxNames.Background = new SolidColorBrush(color);
-            listBoxNames.Foreground = new SolidColorBrush(Colors.White);
-            listBoxNames.FontSize = 16;
-            listBoxNames.HorizontalAlignment = HorizontalAlignment.Stretch;
-            if (requests.Count != 0)
-                listBoxNames.ItemsSource = (from r in requests select r.Item1 + " " + r.Item2).ToArray();
-            listBoxNames.SetValue(DockPanel.DockProperty, Dock.Left);
+            DataGrid dataGrid = new DataGrid();
+            var displayRequests = (from r in requests select new {
+                Request = r.Item1,
+                Value = r.Item2.ToString("N", numFormat)
+            }).ToList();
+            dataGrid.ItemsSource = displayRequests;
+            dataGrid.ColumnWidth = new DataGridLength(50, DataGridLengthUnitType.Star);
             popupPanel.Children.Add(popupTitle);
             popupPanel.Children.Add(popupNotation);
-            popupPanel.Children.Add(listBoxNames);
+            popupPanel.Children.Add(dataGrid);
             popupPanel.Background = new SolidColorBrush(color);
             Border borderPopup = new Border();
             borderPopup.BorderThickness = new Thickness(1);
