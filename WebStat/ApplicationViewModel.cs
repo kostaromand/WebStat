@@ -18,7 +18,6 @@ namespace WebStat
     {
         MainWindow window;
         string filePath = "";
-        int topRequest = 5;
         int nodesOnLevel = 5;
         int topRequestCount = 5;
         int maxColorNum = 200;
@@ -38,7 +37,6 @@ namespace WebStat
             if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 filePath = ofd.FileName;
-                builder = new TreeBuilder(topRequest, new CSVDataReader(filePath), new GroupBuilder());
             }
         }
 
@@ -46,16 +44,17 @@ namespace WebStat
         {
             int customNodesOnLevel=0;
             bool checkOnNum = int.TryParse(window.NodesOnLelelTextBox.Text, out customNodesOnLevel);
-            if (checkOnNum  && customNodesOnLevel>0 && customNodesOnLevel<10)
+            if (checkOnNum  && customNodesOnLevel>0 && customNodesOnLevel<=10)
             {
                 nodesOnLevel = customNodesOnLevel;
             }
-            int cunstomTopRequest = 0;
-            checkOnNum = int.TryParse(window.TopRequestCountTextBox.Text, out cunstomTopRequest);
-            if (checkOnNum && cunstomTopRequest > 0 && cunstomTopRequest < 10)
+            int customTopRequest = 0;
+            checkOnNum = int.TryParse(window.TopRequestCountTextBox.Text, out customTopRequest);
+            if (checkOnNum && customTopRequest > 0 && customTopRequest <= 10)
             {
-                topRequestCount = cunstomTopRequest;
+                topRequestCount = customTopRequest;
             }
+            builder = new TreeBuilder(topRequestCount, new CSVDataReader(filePath), new GroupBuilder());
             if (builder!=null)
             {
                 TreeNode root = builder.GetTree();
@@ -196,11 +195,11 @@ namespace WebStat
                     Popup popup = getPopup(auxColor, elem.Node.ShortName, elem.Node.TopRequests);
                     title.MouseEnter += (s, e) => {
                         popup.IsOpen = true;
-                        border.BorderBrush = new SolidColorBrush(borderColor);
+                        changeNextBorder(title, borderColor);
                     };
                     title.MouseLeave += (s, e) => {
                         popup.IsOpen = false;
-                        border.BorderBrush = new SolidColorBrush(Colors.Transparent);
+                        changeNextBorder(title, Colors.Transparent);
                     };
                     currentCanvas.Children.Add(border);
                     double canvasHeight = dockPanel.Height - title.Height;
