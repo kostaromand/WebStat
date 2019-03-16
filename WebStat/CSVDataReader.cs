@@ -5,11 +5,13 @@ namespace WebStat
 {
     public class CSVDataReader : DataReader
     {
-        static int groupIndex = 5;
-        static int requestIndex = 3;
-        static int phraseFreqIndex = 11;
-        static int accFreqIndex = 12;
-
+        int groupIndex = 5;
+        int requestIndex = 3;
+        int phraseFreqIndex = 11;
+        int accFreqIndex = 12;
+        int urlIndex = 14;
+        int positionIndex = 13;
+        int domainIndex = 2;
         public CSVDataReader(string path)
         {
             this.path = path;
@@ -18,24 +20,25 @@ namespace WebStat
         public override IEnumerable<RequestObject> ReadData()
         {
             var requestObjects = new List<RequestObject>();
+            string[] fields;
             using (TextFieldParser tfp = new TextFieldParser(path, Encoding.Default))
             {
                 tfp.TextFieldType = FieldType.Delimited;
                 tfp.SetDelimiters(";");
                 tfp.ReadFields();
-                string[] fields;
-                string group;
-                string request;
-                int phraseFreq;
-                int accFreq;
                 while (!tfp.EndOfData)
                 {
                     fields = tfp.ReadFields();
-                    group = fields[groupIndex];
-                    request = fields[requestIndex];
-                    phraseFreq = int.Parse(fields[phraseFreqIndex]);
-                    accFreq = int.Parse(fields[accFreqIndex]);
-                    requestObjects.Add(new RequestObject(group, request, phraseFreq, accFreq));
+
+                    requestObjects.Add(new RequestObject(
+                        fields[domainIndex],
+                        fields[groupIndex],
+                        fields[requestIndex],
+                        int.Parse(fields[phraseFreqIndex]),
+                        int.Parse(fields[accFreqIndex]),
+                        int.Parse(fields[positionIndex]),
+                        fields[urlIndex])
+                        );
                 }
                 return requestObjects;
             }

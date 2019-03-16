@@ -26,9 +26,15 @@ namespace WebStat
         double borderThickness = 4;
         Color borderColor = new Color() { A = 255, R = 74, G = 179, B = 198 };
         NumberFormatInfo numFormat = new CultureInfo("en-US", false).NumberFormat;
+        TreeInfo info;
         public ApplicationViewModel(MainWindow window)
         {
             this.window = window;
+            info = new TreeInfo();
+            info.AddNewLevelInfo(new NodeLevelInfo(LevelType.Group, PopupLevelType.Request,0));
+            info.AddNewLevelInfo(new NodeLevelInfo(LevelType.Group, PopupLevelType.Request,1));
+            info.AddNewLevelInfo(new NodeLevelInfo(LevelType.Group, PopupLevelType.Request,2));
+            info.AddNewLevelInfo(new NodeLevelInfo(LevelType.Group, PopupLevelType.Request,3));
         }
 
         public void getPathClick()
@@ -54,7 +60,7 @@ namespace WebStat
             {
                 topRequestCount = customTopRequest;
             }
-            builder = new TreeBuilder(topRequestCount, new CSVDataReader(filePath), new GroupBuilder());
+            builder = new TreeBuilder(topRequestCount, new CSVDataReader(filePath), info);
             if (builder!=null)
             {
                 TreeNode root = builder.GetTree();

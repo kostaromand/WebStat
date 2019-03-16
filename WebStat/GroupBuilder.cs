@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebStat
 {
-    public class GroupBuilder : ITreeBuilder
+    public class GroupBuilder : ITreeBuilderBehavior
     {
         int id;
         public void BuildTree(TreeNode root, List<RequestObject> requestObjects)
@@ -16,14 +16,15 @@ namespace WebStat
             requestObjects.ForEach(
                 request =>
                 {
-                    current = AddNodesToTree(root, request.Group);
+                    current = AddNodesToTree(root, request.Groups);
                     current.AddRequestToNode(request.Request, request.PhraseFrequency, request.AccurateFrequency);
                 });
         }
-        TreeNode AddNodesToTree(TreeNode node, string str) //добавление узлов к дереву
+
+        TreeNode AddNodesToTree(TreeNode node, string[] groups) //добавление узлов к дереву
         {
             //имена узлов
-            string[] nodes = str.Split('.');
+            string[] nodes = groups;
             TreeNode current = node;
             TreeNode child;
             foreach (var element in nodes)

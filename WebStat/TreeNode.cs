@@ -31,7 +31,7 @@ namespace WebStat
             return area;
         }
     
-        public void CalculateArea() //посчитать площадь узла
+        private void CalculateArea() //посчитать площадь узла
         {
             if (Children.Count == 0)
             {

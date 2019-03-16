@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebStat
 {
-    public interface ITreeBuilder
+    public interface ITreeBuilderBehavior
     {
         void BuildTree(TreeNode root, List<RequestObject> requestObjects);
     }

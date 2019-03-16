@@ -61,16 +61,20 @@
     </ApplicationDefinition>
     <Compile Include="ApplicationViewModel.cs" />
     <Compile Include="GroupBuilder.cs" />
-    <Compile Include="ITreeBuilder.cs" />
+    <Compile Include="ITreeBuilderBehavior.cs" />
+    <Compile Include="LevelType.cs" />
+    <Compile Include="NodeLevelInfo.cs" />
     <Compile Include="Orientation.cs" />
     <Compile Include="CSVDataReader.cs" />
     <Compile Include="DataReader.cs" />
     <Compile Include="MapElement.cs" />
     <Compile Include="MapRow.cs" />
+    <Compile Include="PopupLevelType.cs" />
     <Compile Include="RequestObject.cs" />
     <Compile Include="RowElement.cs" />
     <Compile Include="TreeBuilder.cs" />
     <Compile Include="LayBuilder.cs" />
+    <Compile Include="TreeInfo.cs" />
     <Compile Include="TreeNode.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
