@@ -60,9 +60,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ApplicationViewModel.cs" />
-    <Compile Include="GroupBuilder.cs" />
-    <Compile Include="ITreeBuilderBehavior.cs" />
     <Compile Include="LevelType.cs" />
+    <Compile Include="NodeCalculator.cs" />
     <Compile Include="NodeLevelInfo.cs" />
     <Compile Include="Orientation.cs" />
     <Compile Include="CSVDataReader.cs" />

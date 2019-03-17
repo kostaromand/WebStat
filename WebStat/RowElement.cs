@@ -10,7 +10,7 @@ namespace WebStat
     public class RowElement : MapElement
     {
         public TreeNode Node { get; private set; }
-        public RowElement(TreeNode node) : base(node.GetArea())
+        public RowElement(TreeNode node) : base(node.Area)
         {
             Node = node;
         }

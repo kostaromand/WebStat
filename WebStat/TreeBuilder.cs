@@ -5,16 +5,18 @@ namespace WebStat
     public class TreeBuilder
     {
         private int id;
-        private List<RequestObject> requestObjects = new List<RequestObject>();
+        private List<RequestObject> requestObjects;
         private TreeNode root;   //корень дерева
         public int topRequestsCount { get; set; } //количество реквестов в топе
         public DataReader Reader { get; set; }
         public TreeInfo Info { get; set; }
+        public NodeCalculator nodeCalculator;
         public TreeBuilder(int topRequestsCount,DataReader dataReader,TreeInfo info)
         {
-            Info = info;
+            this.Info = info;
             this.topRequestsCount = topRequestsCount;
-            Reader = dataReader;
+            this.Reader = dataReader;
+            nodeCalculator = new NodeCalculator();
         }
         public TreeNode GetTree()
         {
@@ -22,8 +24,9 @@ namespace WebStat
             root = new TreeNode(null, id, "WebStat");
             requestObjects = Reader.ReadData().ToList();
             BuildTree();
-            root.CalculateTopRequests(topRequestsCount);
-            root.GetArea();
+            nodeCalculator.CalcTopRequests(root, topRequestsCount);
+            nodeCalculator.CalcArea(root);
+            nodeCalculator.CalcTopLinks(root, topRequestsCount);
             return root;
         }
 
@@ -36,6 +39,7 @@ namespace WebStat
                 {
                     current = AddNodesToTree(root, Info.getNodeNamesSequence(request));
                     current.AddRequestToNode(request.Request, request.PhraseFrequency, request.AccurateFrequency);
+                    current.AddLinkToNode(request.link, request.Position);
                 });
         }
 

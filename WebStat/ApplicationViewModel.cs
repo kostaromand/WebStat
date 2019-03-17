@@ -32,7 +32,7 @@ namespace WebStat
             this.window = window;
             info = new TreeInfo();
             info.AddNewLevelInfo(new NodeLevelInfo(LevelType.Group, PopupLevelType.Request,0));
-            info.AddNewLevelInfo(new NodeLevelInfo(LevelType.Group, PopupLevelType.Request,1));
+            info.AddNewLevelInfo(new NodeLevelInfo(LevelType.Domain, PopupLevelType.Request,1));
             info.AddNewLevelInfo(new NodeLevelInfo(LevelType.Group, PopupLevelType.Request,2));
             info.AddNewLevelInfo(new NodeLevelInfo(LevelType.Group, PopupLevelType.Request,3));
         }
@@ -82,7 +82,7 @@ namespace WebStat
             return textBlock;
         }
 
-        Popup getPopup(Color color,string title,List<Tuple<string,int>> requests)
+        Popup getPopup(Color color,string title, Dictionary<string, int> requests)
         {
             Popup popup = new Popup();
             popup.Placement = PlacementMode.Mouse;
@@ -103,8 +103,8 @@ namespace WebStat
             popupNotation.SetValue(DockPanel.DockProperty, Dock.Top);
             DataGrid dataGrid = new DataGrid();
             var displayRequests = (from r in requests select new {
-                Request = r.Item1,
-                Value = r.Item2.ToString("N", numFormat)
+                Request = r.Key,
+                Value = r.Value.ToString("N", numFormat)
             }).ToList();
             dataGrid.ItemsSource = displayRequests;
             dataGrid.ColumnWidth = new DataGridLength(50, DataGridLengthUnitType.Star);
@@ -177,7 +177,7 @@ namespace WebStat
                     dockPanel.Height = elem.Height - borderThickness * 2;
                     dockPanel.LastChildFill = true;    
                     TextBlock title = getTextBlock(decreaseColor(auxColor, level, 6), elem.Node.ShortName);
-                    if (elem.Width < 50)
+                    if (elem.Width < 50 || elem.Height<30)
                     {
                         title.Text = "";
                         title.Height = elem.Height;
@@ -198,7 +198,7 @@ namespace WebStat
                     DockPanel.SetDock(newCanvas, Dock.Top);
                     dockPanel.Children.Add(newCanvas);
                     dockPanel.SetValue(Panel.ZIndexProperty, level);
-                    Popup popup = getPopup(auxColor, elem.Node.ShortName, elem.Node.TopRequests);
+                    Popup popup = getPopup(auxColor, elem.Node.ShortName, elem.Node.TopLinks);
                     title.MouseEnter += (s, e) => {
                         popup.IsOpen = true;
                         changeNextBorder(title, borderColor);

@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 namespace WebStat
 {
     public class TreeNode
     {
-        public List<Tuple<string, int>> TopRequests { get; private set; }
-        private long area; //площадь
+        public Dictionary<string, int> TopRequests { get; set; }
+        public Dictionary<string, int> TopLinks { get;set; }
+        public long Area { get; set; } //площадь
         public int Id { get; private set; } 
         public string Name { get; private set; } //имя узла
         public int ParentId { get; private set; } //ID родительского узла
@@ -20,31 +19,11 @@ namespace WebStat
         public TreeNode Parent { get; private set; } //родительский узел
         //Cписок запросов Key - название запроса, value - частота
         [JsonIgnore]
-        public Dictionary<string, int> Requests { get; set; } 
-
-        public long GetArea()
+        public Dictionary<string, int> Requests { get; private set; }
+        public Dictionary<string, int> Links { get; private set; }
+        public TreeNode(TreeNode parent, int id, string shortName)
         {
-            if (area == 0)
-            {
-                CalculateArea();
-            }
-            return area;
-        }
-    
-        private void CalculateArea() //посчитать площадь узла
-        {
-            if (Children.Count == 0)
-            {
-                area = (from d in Requests select d.Value).Sum();
-            }
-            else
-            {
-                area = (from ch in Children select ch.GetArea()).Sum();
-            }
-        }
-        public TreeNode(TreeNode parent, int id, string shortName) 
-        {
-            TopRequests = new List<Tuple<string, int>>();
+            TopRequests = new Dictionary<string, int>();
             Parent = parent;
             Id = id;
             if (parent != null)
@@ -53,6 +32,7 @@ namespace WebStat
             }
             ShortName = shortName;
             Requests = new Dictionary<string, int>();
+            Links = new Dictionary<string, int>();
             Children = new List<TreeNode>();
             if (parent == null)
             {
@@ -63,7 +43,7 @@ namespace WebStat
                 parent.Children.Add(this);
                 Name = parent.ShortName + "." + shortName;
             }
-        }
+        }    
         //добавление запроса в узел
         public void AddRequestToNode(string request,int phraseFreq, int accurateFreq) 
         {
@@ -77,40 +57,24 @@ namespace WebStat
                 Requests[request] = freq;
             }
         }
+        //добавление ссылки в узел
+        public void AddLinkToNode(string link, int position)
+        {
+            if (!Links.ContainsKey(link))
+            {
+                Links.Add(link, position);
+            }
+            else if (Links[link] < position)
+            {
+                Links[link] = position;
+            }
+        }
 
-        public void CalculateTopRequests(int count) //найти топ реквестов для узла
-        {
-            _calculateTopRequests(count).ToList();
-        }
-        //Топ N запросов узла
-        IEnumerable<Tuple<string,int>> _calculateTopRequests(int count) //метод для просчета топа для узла
-        {
-            IEnumerable<Tuple<string, int>> current;
-            if (Children.Count==0)
-            {
-                current = (from item in Requests.OrderByDescending(x => x.Value)
-                               select new Tuple<string, int>(item.Key, item.Value)).Take(count);
-                TopRequests = current.ToList();
-                return current;
-            }
-            else
-            {
-                IEnumerable<Tuple<string,int>> mergeList = new List<Tuple<string,int>>();
-                foreach(var child in Children)
-                {
-                    mergeList = mergeList.Concat(child._calculateTopRequests(count));
-                }
-                current = mergeList.OrderByDescending(x => x.Item2).Take(count);
-                TopRequests = current.ToList();
-                return current;
-            }
-        }
         public override bool Equals(object obj)
         {
             var node = obj as TreeNode;
             return node != null &&
                    Name == node.Name;
-
         }   
     }
 }
