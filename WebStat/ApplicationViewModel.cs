@@ -19,17 +19,30 @@ namespace WebStat
     {
         MainWindow window;
         TreeNode root;
+        TreeNode currentRoot;
         int maxColorNum = 200;
         int minColorNum = 50;
         double borderThickness = 4;
         Color borderColor = new Color() { A = 255, R = 74, G = 179, B = 198 };
         NumberFormatInfo numFormat = new CultureInfo("en-US", false).NumberFormat;
+
+        public void LevelUp()
+        {
+            if (currentRoot.Parent != null)
+            {
+                window.WebStatTitle.Text = currentRoot.Parent.ShortName;
+                CreateTreeMap(currentRoot.Parent, window.WebStatCanvas, 0);
+                currentRoot = currentRoot.Parent;
+            }
+        }
+
         TreeInfo info;
         public ApplicationViewModel(MainWindow window, TreeNode root, TreeInfo info)
         {
             this.window = window;
             this.info = info;
             this.root = root;
+            currentRoot = root;
         }
 
         public void ShowTree()
@@ -38,7 +51,7 @@ namespace WebStat
             if (root != null)
             {
                 window.WebStatCanvas.Children.Clear();
-                CreateTreeMap(root, window.WebStatCanvas, 1);
+                CreateTreeMap(root, window.WebStatCanvas, 0);
             }
         }
 
@@ -121,6 +134,7 @@ namespace WebStat
         }
         void CreateTreeMap(TreeNode node, Canvas currentCanvas, int level)
         {
+            level++;
             double w = currentCanvas.ActualWidth == 0 ? currentCanvas.Width : currentCanvas.ActualWidth;
             double h = currentCanvas.ActualHeight == 0 ? currentCanvas.Height : currentCanvas.ActualHeight;
             LayBuilder layBuilder = new LayBuilder(node, info.nodesOnLevel, w, h);
@@ -189,7 +203,8 @@ namespace WebStat
                          title.MouseEnter -= enter;
                          window.WebStatCanvas.Children.Clear();
                          window.WebStatTitle.Text = elem.Node.ShortName;
-                         CreateTreeMap(elem.Node, window.WebStatCanvas, 1);
+                         currentRoot = elem.Node;
+                         CreateTreeMap(elem.Node, window.WebStatCanvas, 0);
                      };
                     currentCanvas.Children.Add(border);
                     double canvasHeight = dockPanel.Height - title.Height;

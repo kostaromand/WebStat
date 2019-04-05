@@ -21,5 +21,10 @@ namespace WebStat
         {
             viewModel.ShowTree();
         }
+
+        private void ButtonUpLevel_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.LevelUp();
+        }
     }
 }

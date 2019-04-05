@@ -19,6 +19,7 @@
             <Button x:Name="ShowTree" Click="ShowTree_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Margin="60,26,71,24">
                 Построить
             </Button>
+            <Button x:Name="ButtonUpLevel" Content="На уровень выше" Grid.Column="1" HorizontalAlignment="Left" Margin="25,26,0,0" VerticalAlignment="Top" Width="171" Click="ButtonUpLevel_Click"/>
         </Grid>
         <DockPanel Name="WebStat" Margin="5,5,5,5">
             <TextBlock Name="WebStatTitle" Background="#FF23212C"  DockPanel.Dock="Top" TextAlignment="Center" Foreground="White" FontSize="18">
