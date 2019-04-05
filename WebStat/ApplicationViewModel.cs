@@ -68,7 +68,7 @@ namespace WebStat
             return textBlock;
         }
 
-        Popup getPopup(Color color,string title, Dictionary<string, int> requests)
+        Popup getPopup(Color color,string title, Dictionary<string, int> requests,PopupLevelType type)
         {
             Popup popup = new Popup();
             popup.Placement = PlacementMode.Mouse;
@@ -90,7 +90,7 @@ namespace WebStat
             DataGrid dataGrid = new DataGrid();
             var displayRequests = (from r in requests select new {
                 Request = r.Key,
-                Value = r.Value.ToString("N", numFormat)
+                Value = type == PopupLevelType.Request ? r.Value.ToString("N", numFormat) : r.Value.ToString()
             }).ToList();
             dataGrid.ItemsSource = displayRequests;
             dataGrid.ColumnWidth = new DataGridLength(50, DataGridLengthUnitType.Star);
@@ -185,7 +185,15 @@ namespace WebStat
                     DockPanel.SetDock(newCanvas, Dock.Top);
                     dockPanel.Children.Add(newCanvas);
                     dockPanel.SetValue(Panel.ZIndexProperty, level);
-                    Popup popup = getPopup(auxColor, elem.Node.ShortName, elem.Node.TopLinks);
+                    Popup popup;
+                    if (info.nodeLevels[level-1].PopupType==PopupLevelType.Request)
+                    {
+                         popup = getPopup(auxColor, elem.Node.ShortName, elem.Node.TopRequests, PopupLevelType.Request);
+                    }
+                    else
+                    {
+                        popup = getPopup(auxColor, elem.Node.ShortName, elem.Node.TopLinks, PopupLevelType.Url);
+                    }
                     MouseEventHandler enter = (s, e) => {
                         popup.IsOpen = true;
                         changeNextBorder(title, borderColor);
@@ -214,7 +222,7 @@ namespace WebStat
                         newCanvas.Width = dockPanel.Width;
                         title.Loaded += (s, e) =>
                         {
-                            CreateTreeMap(elem.Node, newCanvas, level + 1);
+                            CreateTreeMap(elem.Node, newCanvas, level);
                         };
                     }
                 }
