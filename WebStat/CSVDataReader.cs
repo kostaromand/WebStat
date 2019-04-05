@@ -12,6 +12,7 @@ namespace WebStat
         int urlIndex = 14;
         int positionIndex = 13;
         int domainIndex = 2;
+        int tagIndex = 9;
         public CSVDataReader(string path)
         {
             this.path = path;
@@ -30,14 +31,16 @@ namespace WebStat
                 {
                     fields = tfp.ReadFields();
 
-                    requestObjects.Add(new RequestObject(
+                    requestObjects.Add(
+                        new RequestObject(
                         fields[domainIndex],
                         fields[groupIndex],
                         fields[requestIndex],
                         int.Parse(fields[phraseFreqIndex]),
                         int.Parse(fields[accFreqIndex]),
                         int.Parse(fields[positionIndex]),
-                        fields[urlIndex])
+                        fields[urlIndex],
+                        fields[tagIndex])
                         );
                 }
                 return requestObjects;

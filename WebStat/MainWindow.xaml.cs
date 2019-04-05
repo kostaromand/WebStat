@@ -12,17 +12,11 @@ namespace WebStat
     public partial class MainWindow : Window
     {
         ApplicationViewModel viewModel;
-        public MainWindow()
+        public MainWindow(TreeNode root,TreeInfo info)
         {
             InitializeComponent();
-            viewModel = new ApplicationViewModel(this);
+            viewModel = new ApplicationViewModel(this, root, info);
         }
-
-        private void getPath_Click(object sender, RoutedEventArgs e)
-        {
-            viewModel.getPathClick();
-        }
-
         private void ShowTree_Click(object sender, RoutedEventArgs e)
         {
             viewModel.ShowTree();

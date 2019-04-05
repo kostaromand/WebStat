@@ -8,7 +8,11 @@ namespace WebStat
 {
     public class TreeInfo
     {
+        public int nodesOnLevel { get; set; }
+        public int levelCount { get; set; }
+        public int topRequestCount { get; set; }
         public List<NodeLevelInfo> nodeLevels { get; private set; }
+
         public TreeInfo()
         {
             nodeLevels = new List<NodeLevelInfo>();
@@ -18,6 +22,7 @@ namespace WebStat
         {
             nodeLevels.Add(levelInfo);
         }
+
         public string[] getNodeNamesSequence(RequestObject request)
         {
             string[] sequence = new string[nodeLevels.Count];
@@ -31,6 +36,10 @@ namespace WebStat
                 {
                     if(request.Groups.Length>nodeLevels[i].Value)
                     sequence[i] = request.Groups[nodeLevels[i].Value];
+                }
+                else if(nodeLevels[i].LevelType == LevelType.Tag)
+                {
+                    sequence[i] = request.Tag;
                 }
             }
             return sequence;

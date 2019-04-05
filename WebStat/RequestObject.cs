@@ -8,17 +8,19 @@
         public string Request { get; set; } //запрос
         public int PhraseFrequency { get; set; } //фразовая частота
         public int AccurateFrequency { get; set; } //точная частота
-        public string link { get; set; } //ulr
-        public int Position { get; set; } //ulr
-        public RequestObject(string domain,string groups,string request,int phraseFrequency, int accurateFrequency,int position, string link)
+        public string Link { get; set; } //url
+        public int Position { get; set; } //pos
+        public string Tag { get; set; }
+        public RequestObject(string domain,string groups,string request,int phraseFrequency, int accurateFrequency,int position, string link,string tag)
         {
             this.Domain = domain;
             this.Groups = groups.Split('.');
             this.Request = request;
             this.PhraseFrequency = phraseFrequency;
             this.AccurateFrequency = accurateFrequency;
-            this.link = link;
+            this.Link = link;
             this.Position = position;
+            this.Tag = tag;
         }
     }
 }

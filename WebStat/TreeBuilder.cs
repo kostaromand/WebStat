@@ -39,7 +39,7 @@ namespace WebStat
                 {
                     current = AddNodesToTree(root, Info.getNodeNamesSequence(request));
                     current.AddRequestToNode(request.Request, request.PhraseFrequency, request.AccurateFrequency);
-                    current.AddLinkToNode(request.link, request.Position);
+                    current.AddLinkToNode(request.Link, request.Position);
                 });
         }
 

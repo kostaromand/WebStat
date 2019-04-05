@@ -11,59 +11,32 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
+using System.Windows.Input;
 
 namespace WebStat
 {
     public class ApplicationViewModel
     {
         MainWindow window;
-        string filePath = "";
-        int nodesOnLevel = 5;
-        int topRequestCount = 5;
+        TreeNode root;
         int maxColorNum = 200;
         int minColorNum = 50;
-        TreeBuilder builder;
         double borderThickness = 4;
         Color borderColor = new Color() { A = 255, R = 74, G = 179, B = 198 };
         NumberFormatInfo numFormat = new CultureInfo("en-US", false).NumberFormat;
         TreeInfo info;
-        public ApplicationViewModel(MainWindow window)
+        public ApplicationViewModel(MainWindow window, TreeNode root, TreeInfo info)
         {
             this.window = window;
-            info = new TreeInfo();
-            info.AddNewLevelInfo(new NodeLevelInfo(LevelType.Group, PopupLevelType.Request,0));
-            info.AddNewLevelInfo(new NodeLevelInfo(LevelType.Domain, PopupLevelType.Request,1));
-            info.AddNewLevelInfo(new NodeLevelInfo(LevelType.Group, PopupLevelType.Request,2));
-            info.AddNewLevelInfo(new NodeLevelInfo(LevelType.Group, PopupLevelType.Request,3));
-        }
-
-        public void getPathClick()
-        {
-            System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
-            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                filePath = ofd.FileName;
-            }
+            this.info = info;
+            this.root = root;
         }
 
         public void ShowTree()
         {
-            int customNodesOnLevel=0;
-            bool checkOnNum = int.TryParse(window.NodesOnLelelTextBox.Text, out customNodesOnLevel);
-            if (checkOnNum  && customNodesOnLevel>0 && customNodesOnLevel<=10)
+            window.WebStatTitle.Text = "WebStat";
+            if (root != null)
             {
-                nodesOnLevel = customNodesOnLevel;
-            }
-            int customTopRequest = 0;
-            checkOnNum = int.TryParse(window.TopRequestCountTextBox.Text, out customTopRequest);
-            if (checkOnNum && customTopRequest > 0 && customTopRequest <= 10)
-            {
-                topRequestCount = customTopRequest;
-            }
-            builder = new TreeBuilder(topRequestCount, new CSVDataReader(filePath), info);
-            if (builder!=null)
-            {
-                TreeNode root = builder.GetTree();
                 window.WebStatCanvas.Children.Clear();
                 CreateTreeMap(root, window.WebStatCanvas, 1);
             }
@@ -150,7 +123,7 @@ namespace WebStat
         {
             double w = currentCanvas.ActualWidth == 0 ? currentCanvas.Width : currentCanvas.ActualWidth;
             double h = currentCanvas.ActualHeight == 0 ? currentCanvas.Height : currentCanvas.ActualHeight;
-            LayBuilder layBuilder = new LayBuilder(node, nodesOnLevel, w, h);
+            LayBuilder layBuilder = new LayBuilder(node, info.nodesOnLevel, w, h);
             var rows = layBuilder.getLayRows();
             if (rows == null)
                 return;
@@ -199,14 +172,25 @@ namespace WebStat
                     dockPanel.Children.Add(newCanvas);
                     dockPanel.SetValue(Panel.ZIndexProperty, level);
                     Popup popup = getPopup(auxColor, elem.Node.ShortName, elem.Node.TopLinks);
-                    title.MouseEnter += (s, e) => {
+                    MouseEventHandler enter = (s, e) => {
                         popup.IsOpen = true;
                         changeNextBorder(title, borderColor);
                     };
-                    title.MouseLeave += (s, e) => {
+                    title.MouseEnter += enter;
+                    MouseEventHandler leave = (s, e) => {
                         popup.IsOpen = false;
                         changeNextBorder(title, Colors.Transparent);
                     };
+                    title.MouseLeave += leave;
+                    title.MouseDown += (s, e) =>
+                     {
+                         popup.IsOpen = false;
+                         title.MouseLeave -= leave;
+                         title.MouseEnter -= enter;
+                         window.WebStatCanvas.Children.Clear();
+                         window.WebStatTitle.Text = elem.Node.ShortName;
+                         CreateTreeMap(elem.Node, window.WebStatCanvas, 1);
+                     };
                     currentCanvas.Children.Add(border);
                     double canvasHeight = dockPanel.Height - title.Height;
                     if (canvasHeight > borderThickness*2 && dockPanel.Width > borderThickness * 2)
